@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { HomeAuthCta } from "@/components/home-auth-cta";
 import { ProductCard } from "@/components/product-card";
 import { getCollectionProducts, products } from "@/lib/catalog";
 
@@ -36,9 +37,7 @@ export default function Home() {
             <Link href="/new-arrivals" className="btn-dark">
               Shop New Drop
             </Link>
-            <Link href="/signup" className="btn-light">
-              Create Account
-            </Link>
+            <HomeAuthCta />
           </div>
         </div>
         <div className="surface-card grid-backdrop p-4">
@@ -74,9 +73,6 @@ export default function Home() {
             <p className="kicker">Trendy Right Now</p>
             <h2 className="headline mt-2 text-4xl">Most wanted edits</h2>
           </div>
-          <Link href="/women" className="text-xs font-bold uppercase tracking-[0.2em]">
-            View Trendy
-          </Link>
         </div>
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {trendyProducts.map((product) => (

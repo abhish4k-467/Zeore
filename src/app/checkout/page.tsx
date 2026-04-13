@@ -1,11 +1,34 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAuth } from "@/components/auth-provider";
 import { useCart } from "@/components/cart-provider";
 import { formatPrice } from "@/lib/catalog";
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const { subtotal, itemCount, clearCart } = useCart();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login?next=/checkout");
+    }
+  }, [loading, router, user]);
+
+  if (loading || !user) {
+    return (
+      <div className="page-shell py-10">
+        <div className="surface-card p-8">
+          <p className="text-sm uppercase tracking-[0.14em] text-[var(--text-soft)]">
+            Redirecting to login...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell grid gap-6 py-10 lg:grid-cols-[1.05fr_0.95fr]">

@@ -2,22 +2,25 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const nextPath = (() => {
+    const raw = searchParams.get("next");
+    return raw && raw.startsWith("/") ? raw : "/";
+  })();
 
   async function handleSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setSuccess("");
 
     if (!supabase) {
       setError(
@@ -46,11 +49,13 @@ export default function SignupPage() {
     }
 
     if (data.session) {
-      router.push("/");
+      router.push(nextPath);
       return;
     }
 
-    setSuccess("Account created. Check your email to confirm your account.");
+    setError(
+      "Email confirmation is enabled in Supabase. Disable it in Authentication > Providers > Email to allow instant signup/login."
+    );
   }
 
   return (
@@ -65,4 +70,53 @@ export default function SignupPage() {
         <form className="grid gap-4" onSubmit={handleSignup}>
           <label className="grid gap-2 text-xs font-bold uppercase tracking-[0.16em]">
             Full Name
-            <in
+            <input
+              type="text"
+              placeholder="Your full name"
+              value={fullName}
+              onChange={(event) => setFullName(event.target.value)}
+              required
+              className="rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm outline-none"
+            />
+          </label>
+          <label className="grid gap-2 text-xs font-bold uppercase tracking-[0.16em]">
+            Email
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm outline-none"
+            />
+          </label>
+          <label className="grid gap-2 text-xs font-bold uppercase tracking-[0.16em]">
+            Password
+            <input
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              minLength={6}
+              required
+              className="rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm outline-none"
+            />
+          </label>
+          <button type="submit" className="btn-dark mt-3" disabled={loading}>
+            {loading ? "Creating..." : "Sign Up"}
+          </button>
+          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+        </form>
+        <p className="mt-5 text-sm text-[var(--text-soft)]">
+          Already have an account?{" "}
+          <Link
+            href={`/login${nextPath !== "/" ? `?next=${encodeURIComponent(nextPath)}` : ""}`}
+            className="font-bold text-[var(--text)]"
+          >
+            Login
+          </Link>
+        </p>
+      </section>
+    </div>
+  );
+}

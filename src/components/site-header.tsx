@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/components/auth-provider";
 import { useCart } from "@/components/cart-provider";
 
 const navItems = [
@@ -14,6 +15,7 @@ const navItems = [
 export function SiteHeader() {
   const pathname = usePathname();
   const { itemCount } = useCart();
+  const { user, loading } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(244,244,242,0.95)] backdrop-blur">
@@ -40,18 +42,22 @@ export function SiteHeader() {
           })}
         </nav>
         <div className="ml-auto flex min-w-max items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm uppercase tracking-[0.18em] text-[var(--text-soft)] transition hover:text-[var(--text)]"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="text-sm uppercase tracking-[0.18em] text-[var(--text-soft)] transition hover:text-[var(--text)]"
-          >
-            Sign Up
-          </Link>
+          {!loading && !user ? (
+            <>
+              <Link
+                href="/login"
+                className="text-sm uppercase tracking-[0.18em] text-[var(--text-soft)] transition hover:text-[var(--text)]"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="text-sm uppercase tracking-[0.18em] text-[var(--text-soft)] transition hover:text-[var(--text)]"
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : null}
           <Link href="/cart" className="btn-dark px-4 py-2 text-xs">
             Cart (<span suppressHydrationWarning>{itemCount}</span>)
           </Link>

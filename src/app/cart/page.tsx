@@ -1,7 +1,27 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth-provider";
 import { CartSummary } from "@/components/cart-summary";
 
 export default function CartPage() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  function handleProceedCheckout() {
+    if (loading) {
+      return;
+    }
+
+    if (!user) {
+      router.push("/login?next=/checkout");
+      return;
+    }
+
+    router.push("/checkout");
+  }
+
   return (
     <div className="page-shell space-y-8 py-10">
       <section className="grid gap-5 lg:grid-cols-[1fr_1fr]">
@@ -22,9 +42,14 @@ export default function CartPage() {
         <Link href="/new-arrivals" className="btn-light">
           Continue Shopping
         </Link>
-        <Link href="/checkout" className="btn-dark">
+        <button
+          type="button"
+          onClick={handleProceedCheckout}
+          disabled={loading}
+          className="btn-dark disabled:cursor-not-allowed disabled:opacity-70"
+        >
           Proceed to Checkout
-        </Link>
+        </button>
       </div>
     </div>
   );
