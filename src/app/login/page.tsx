@@ -2,20 +2,23 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const nextPath = (() => {
-    const raw = searchParams.get("next");
-    return raw && raw.startsWith("/") ? raw : "/";
-  })();
+  const nextPath =
+    typeof window !== "undefined"
+      ? (() => {
+          const params = new URLSearchParams(window.location.search);
+          const raw = params.get("next");
+          return raw && raw.startsWith("/") ? raw : "/";
+        })()
+      : "/";
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
